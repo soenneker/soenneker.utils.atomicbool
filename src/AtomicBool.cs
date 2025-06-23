@@ -5,15 +5,15 @@ namespace Soenneker.Utils.AtomicBool;
 /// <summary>
 /// A thread-safe boolean implemented on top of Interlocked operations.
 /// </summary>
-public sealed class AtomicBoolean
+public sealed class AtomicBool
 {
     // Underlying 0/1 storage
     private int _flag;
 
     /// <summary>
-    /// Initializes a new AtomicBoolean with the given initial value.
+    /// Initializes a new AtomicBool with the given initial value.
     /// </summary>
-    public AtomicBoolean(bool initialValue = false)
+    public AtomicBool(bool initialValue = false)
     {
         _flag = initialValue ? 1 : 0;
     }
