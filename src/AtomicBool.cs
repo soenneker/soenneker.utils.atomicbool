@@ -1,17 +1,17 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading;
+using Soenneker.Utils.AtomicBool.Abstract;
 
 namespace Soenneker.Utils.AtomicBool;
 
 /// <summary> A thread-safe boolean implemented on top of Interlocked/Volatile operations. </summary>
-public sealed class AtomicBool
+public sealed class AtomicBool : IAtomicBool
 {
     // 0 = false, 1 = true
     private int _flag;
 
     public AtomicBool(bool initialValue = false) => _flag = initialValue ? 1 : 0;
 
-    /// <summary>Gets or sets the current value with appropriate memory ordering.</summary>
     public bool Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -21,10 +21,6 @@ public sealed class AtomicBool
         set => Volatile.Write(ref _flag, value ? 1 : 0);
     }
 
-    /// <summary>
-    /// Atomically sets the value to <paramref name="newValue"/> if the current value equals <paramref name="expected"/>.
-    /// Returns true if successful.
-    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool CompareAndSet(bool expected, bool newValue)
     {
@@ -33,21 +29,12 @@ public sealed class AtomicBool
         return Interlocked.CompareExchange(ref _flag, n, e) == e;
     }
 
-    /// <summary>
-    /// Atomically sets the flag to true and returns whether it was false before.
-    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TrySetTrue() => Interlocked.Exchange(ref _flag, 1) == 0;
 
-    /// <summary>
-    /// Atomically sets the flag to false and returns whether it was true before.
-    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TrySetFalse() => Interlocked.Exchange(ref _flag, 0) == 1;
 
-    /// <summary>
-    /// Atomically exchanges the flag and returns its previous value.
-    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Exchange(bool newValue) => Interlocked.Exchange(ref _flag, newValue ? 1 : 0) == 1;
 
